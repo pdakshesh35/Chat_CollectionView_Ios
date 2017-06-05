@@ -211,6 +211,7 @@
 				TargetAttributes = {
 					B150BC531E99755D005F7765 = {
 						CreatedOnToolsVersion = 8.3;
+						DevelopmentTeam = KH66L48X5M;
 						ProvisioningStyle = Automatic;
 					};
 					B150BC6A1E99755D005F7765 = {
@@ -438,6 +439,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = KH66L48X5M;
 				INFOPLIST_FILE = tableView/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = fap.tableView;
@@ -450,6 +452,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = KH66L48X5M;
 				INFOPLIST_FILE = tableView/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = fap.tableView;
