@@ -10,17 +10,27 @@ import UIKit
 
 class TableViewCell: UITableViewCell {
 
-    @IBOutlet weak var img: UIImageView!
-    @IBOutlet weak var chatView: UIView!
-    @IBOutlet weak var lbl: UILabel!
+ 
+    @IBOutlet weak var textView: UITextView!
+    @IBOutlet weak var bgView: UIView!
+    
+    var estimatedFrame : CGRect!
     override func awakeFromNib() {
         super.awakeFromNib()
-        // Initialization code
-        chatView.layer.masksToBounds = true;
-        chatView.layer.cornerRadius = 10;
         
-        img.layer.masksToBounds = true;
-        img.layer.cornerRadius = img.frame.size.height/2;
+        let size = CGSize(width: 250, height: 1000)
+        let options = NSStringDrawingOptions.usesFontLeading.union(.usesLineFragmentOrigin)
+        textView.sizeToFit()
+         estimatedFrame = NSString(string: textView.text).boundingRect(with: size, options: options, attributes: [NSFontAttributeName : UIFont.systemFont(ofSize: 18.0)], context: nil)
+        textView.frame = CGRect(x: 0, y: 0, width: 250 + 16, height: estimatedFrame.height + 20)
+        bgView.frame = CGRect(x: 0, y: 0, width: 250 + 16, height: estimatedFrame.height + 20)
+        
+        print(estimatedFrame.height)
+        
+        textView.font = UIFont.systemFont(ofSize: 18.0)
+        
+        // Initialization code
+        
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {

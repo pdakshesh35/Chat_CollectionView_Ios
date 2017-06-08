@@ -7,20 +7,27 @@
 //
 
 import UIKit
+import GrowingTextView
 
-class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate{
+class ViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource ,GrowingTextViewDelegate{
+   
+    @IBOutlet weak var chatView: UIView!
+    func textViewDidChangeHeight(_ textView: GrowingTextView, height: CGFloat) {
+        UIView.animate(withDuration: 0.2) {
+            self.view.layoutIfNeeded()
+        }
+    }
+    
+    
+    @IBOutlet weak var colView: UICollectionView!
+    
     public var names: [String] = [];
     @IBOutlet weak var tbl: UITableView!
-    @IBOutlet weak var chat: UITextField!
+    @IBOutlet weak var chat: GrowingTextView!
+    var placeholderLabel : UILabel!
     @IBOutlet weak var tblBottom: NSLayoutConstraint!
     
-    @IBOutlet weak var backImage: UIImageView!
-    @IBOutlet weak var chatview: UIView!
-    @IBOutlet weak var containerBtmConstrain: NSLayoutConstraint!
-    @IBOutlet var scrollView: UIScrollView!
-    
-    @IBOutlet weak var innerView: UIView!
-    var keyBoardHeight : Bool = false;
+   
     
     @IBOutlet weak var profileImg: UIImageView!
     
@@ -29,8 +36,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         let nameToSave = chat.text;
         
         self.names.append(nameToSave!)
-        self.tbl.reloadData()
-        self.tbl.scrollToRow(at: self.tbl.lastIndexPath!, at: .bottom, animated: false);
+       
+      
     }
   
     override func viewDidLoad() {
@@ -38,144 +45,135 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         profileImg.layer.masksToBounds = true
         profileImg.layer.cornerRadius = profileImg.frame.size.height/2
-        self.chat.delegate = self ;
-        tbl.delegate = self;
-        tbl.dataSource = self;
-        tbl.backgroundColor = UIColor.clear;
-       
-        //make the table view cells self sizing depends on content - by setting label -> lines 0
-        tbl.rowHeight = UITableViewAutomaticDimension
-        tbl.estimatedRowHeight = 140
-        tbl.separatorColor = UIColor.clear;
         
-        
-        let path = UIBezierPath(roundedRect: self.view.bounds, byRoundingCorners: [.topLeft,.topRight], cornerRadii: CGSize(width : 40, height : 40))
-        let shape = CAShapeLayer()
-            shape.path = path.cgPath
-        self.backImage.layer.mask = shape
+        chat.delegate = self
+      
+        //chat.translatesAutoresizingMaskIntoConstraints = true
+        colView.delegate = self
+        colView.dataSource = self
        
         
-       // self.watchForKeyboard()
-       
+         
+             // self.watchForKeyboard()
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillChangeFrame), name: NSNotification.Name.UIKeyboardWillChangeFrame, object: nil)
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tapGestureHandler))
+        view.addGestureRecognizer(tapGesture)
+
         
         // Do any additional setup after loading the view, typically from a nib.
     }
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        chat.resignFirstResponder()
-        
-        return true
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
     
-    //
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        if text == "\n"{
+            names.append(chat.text)
+            chat.resignFirstResponder()
+            colView.reloadData()
+        }
+        return true
+    }
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return names.count
+    }
+
+   
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let celll = colView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as! CollectionViewCell
+        
+        //initialization of cell content
+        celll.textView.text = names[indexPath.row]
+        
+        
+        //bubble frame
+        let bubbleFrame = getBubbleViewFrame(text: names[indexPath.row])
+        
+        
+        //textview and uiview frames
+        celll.textView.frame = CGRect(x: 40 + 8  , y: 0, width: bubbleFrame.width + 16, height: bubbleFrame.height + 20)
+        celll.bgview.frame = CGRect(x: 40, y: 0, width: bubbleFrame.width + 8 + 16, height: bubbleFrame.height + 20)
+        
+        
+        //create a shape around bubbleview
+        let path = UIBezierPath(roundedRect: celll.bgview.bounds , byRoundingCorners: [.topLeft,.bottomRight], cornerRadii: CGSize(width : 10 , height : 10))
+        let shape = CAShapeLayer()
+        shape.path = path.cgPath
+        celll.bgview.layer.mask = shape
+        
+        
+        
+        return celll
+    }
+    
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        
+        //initialization
+        let messageText = names[indexPath.row]
+        
+        
+        //bubble fram
+       let bubbleFrame = getBubbleViewFrame(text: messageText)
+        
+        //return height
+        return CGSize(width: view.frame.width, height: bubbleFrame.height + 20)
+    }
+    func keyboardWillChangeFrame(_ notification: Notification) {
+        let endFrame = ((notification as NSNotification).userInfo![UIKeyboardFrameEndUserInfoKey] as! NSValue).cgRectValue
+        tblBottom.constant = UIScreen.main.bounds.height - endFrame.origin.y
+       
+       
+        self.view.layoutIfNeeded()
+    }
+    
+    func tapGestureHandler() {
+        view.endEditing(true)
+    }
+        //
     /**
      * Called when the user click on the view (outside the UITextField).
      */
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         self.view.endEditing(true)
     }
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        self.watchForKeyboard()
-    }
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return 1;
-    }
+   
     
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return names.count;
-    }
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tbl.dequeueReusableCell(withIdentifier: "cell") as? TableViewCell;
-        cell?.lbl.text = names[indexPath.row];
-        return cell!;
-    }
-    func textFieldDidBeginEditing(_ textField: UITextField) {
-        self.chat = textField
-       
-    }
+  
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
     
-     func watchForKeyboard () {
-        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWasShown(notification:)), name:NSNotification.Name.UIKeyboardWillShow, object: nil);
-       
-         NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillHide(notification:)), name:NSNotification.Name.UIKeyboardWillHide, object: nil);
+    
+    //create bubble view frame and return it
+    func getBubbleViewFrame(text : String) -> CGRect {
+        
+        //size = max width of bubbleview , and max height
+        let size = CGSize(width: UIScreen.main.bounds.width/2, height: 1000)
+        
+        //options set textview as leading constraint and wrap it around
+        let options = NSStringDrawingOptions.usesFontLeading.union(.usesLineFragmentOrigin)
+        
+        //CGRect frame create bubble view
+        let estimateframe = NSString(string: text).boundingRect(with: size, options: options, attributes: [NSFontAttributeName: UIFont.systemFont(ofSize: 12.0)], context: nil)
+        
+        return estimateframe
     }
     
-     func keyboardWasShown(notification: NSNotification) {
-        if let dic = notification.userInfo {
-            if let keyboardFrame = (dic[UIKeyboardFrameEndUserInfoKey] as AnyObject).cgRectValue {
-               
-                
-                if(self.tbl.contentSize.height < keyboardFrame.size.height){
-                   
-                  self.tbl.frame.size = CGSize(width: UIScreen.main.bounds.width, height: self.innerView.frame.height - keyboardFrame.height - chatview.frame.height)
-                    self.tbl.frame.origin.y = keyboardFrame.height
-                }
-                
-                
-                 self.scrollView.contentInset = UIEdgeInsetsMake(0, 0, keyboardFrame.height, 0)
-
-                self.scrollView.scrollIndicatorInsets = UIEdgeInsetsMake(0, 0, keyboardFrame.height, 0)
-             
-                var aRect : CGRect = self.innerView.frame
-                aRect.size.height -= keyboardFrame.height
-                self.scrollView.contentOffset = CGPoint(x:self.scrollView.contentOffset.x, y:0 + keyboardFrame.height)
-                if let actField = chat
-                {
-                    if (aRect.contains(chat.frame.origin))
-                    {
-                        scrollView.scrollRectToVisible(chatview.frame, animated: false)
-                    }
-                }
-                
-            }
-        }
-        
-        
-    }
-
-    //
     
-     func keyboardWillHide(notification: NSNotification) {
-        UIView.animate(withDuration: 0, animations: { () -> Void in
-           self.tbl.frame.size = CGSize(width: UIScreen.main.bounds.width, height: self.innerView.frame.height - self.chatview.frame.height)
-            
-             self.tbl.frame.origin.y = 0
-             self.tbl.contentInset = UIEdgeInsetsMake(0,0,0,0);
-            self.scrollView.contentInset = UIEdgeInsetsMake(0, 0, 0, 0)
-            self.view.layoutIfNeeded()
-        })
-    }
-
+    
 }
+
 extension UITableView {
-    
-    var lastIndexPath: IndexPath? {
-        
-        let lastSectionIndex = numberOfSections - 1
-        guard lastSectionIndex >= 0 else { return nil }
-        
-        let lastIndexInLastSection = numberOfRows(inSection: lastSectionIndex) - 1
-        guard lastIndexInLastSection >= 0 else { return nil }
-        
-        return IndexPath(row: lastIndexInLastSection, section: lastSectionIndex)
-    }
-  
-    
-    
-}
-extension UIScrollView {
-    func scrollToTop() {
-        let desiredOffset = CGPoint(x: 0, y: -contentInset.top)
-        setContentOffset(desiredOffset, animated: true)
+    func scrollToBottom(animated: Bool = true) {
+        let sections = self.numberOfSections
+        let rows = self.numberOfRows(inSection: sections - 1)
+        self.scrollToRow(at: NSIndexPath(row: rows - 1, section: sections - 1) as IndexPath, at: .bottom, animated: true)
     }
 }
-private var xoAssociationKeyForBottomConstrainInVC: UInt8 = 0
-private var table: UInt8 = 1
-private var arry : UInt = 2
+
 
 
