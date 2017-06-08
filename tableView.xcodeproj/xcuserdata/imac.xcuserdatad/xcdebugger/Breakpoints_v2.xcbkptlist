@@ -10,12 +10,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "tableView/chatBubble.swift"
-            timestampString = "518133176.785469"
+            timestampString = "518512554.295687"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "45"
-            endingLineNumber = "45"
-            landmarkName = "init(data:startY:)"
+            startingLineNumber = "46"
+            endingLineNumber = "46"
+            landmarkName = "init(data:startY:leadMargin:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -26,12 +26,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "tableView/chatBubble.swift"
-            timestampString = "518133383.957356"
+            timestampString = "518512554.295687"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "55"
-            endingLineNumber = "55"
-            landmarkName = "init(data:startY:)"
+            startingLineNumber = "56"
+            endingLineNumber = "56"
+            landmarkName = "init(data:startY:leadMargin:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -42,12 +42,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "tableView/chatBubble.swift"
-            timestampString = "518134911.78963"
+            timestampString = "518512554.295687"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "28"
-            endingLineNumber = "28"
-            landmarkName = "init(data:startY:)"
+            startingLineNumber = "29"
+            endingLineNumber = "29"
+            landmarkName = "init(data:startY:leadMargin:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -58,12 +58,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "tableView/ViewController.swift"
-            timestampString = "518389467.280579"
+            timestampString = "518588396.827796"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "113"
-            endingLineNumber = "113"
-            landmarkName = "keyboardWasShown(notification:)"
+            startingLineNumber = "50"
+            endingLineNumber = "50"
+            landmarkName = "viewDidLoad()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

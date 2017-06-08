@@ -67,12 +67,34 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
         NotificationCenter.default.removeObserver(self)
     }
     
+    
+    func textViewDidChange(_ textView: UITextView) {
+        
+        if(names.count > 1){
+        UIView.animate(withDuration: 0, delay: 0, options: UIViewAnimationOptions.curveLinear, animations: {
+            self.view.layoutIfNeeded()
+        }) { (completed) in
+            let indexPath = NSIndexPath(item: self.names.count - 1, section: 0)
+            self.colView.scrollToItem(at: indexPath as IndexPath, at: .bottom, animated: true)
+        }
+        }
+    }
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         if text == "\n"{
             names.append(chat.text)
-            chat.resignFirstResponder()
+            //chat.resignFirstResponder()
             colView.reloadData()
+            
+            
+          
+                colView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+                
+                scrollToLastItem()
+             
+            chat.text.removeAll()
+                return false
         }
+        
         return true
     }
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -122,10 +144,25 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
     }
     func keyboardWillChangeFrame(_ notification: Notification) {
         let endFrame = ((notification as NSNotification).userInfo![UIKeyboardFrameEndUserInfoKey] as! NSValue).cgRectValue
-        tblBottom.constant = UIScreen.main.bounds.height - endFrame.origin.y
        
+         tblBottom.constant = UIScreen.main.bounds.height - endFrame.origin.y
+        if (colView.contentSize.height > endFrame.height) {
+      
+           
+            UIView.animate(withDuration: 0, delay: 0, options: UIViewAnimationOptions.curveLinear, animations: {
+                
+                self.view.layoutIfNeeded()
+            }) { (completed) in
+                let indexPath = NSIndexPath(item: self.names.count - 1, section: 0)
+                self.colView.scrollToItem(at: indexPath as IndexPath, at: .bottom, animated: true)
+          }
        
-        self.view.layoutIfNeeded()
+        } else {
+            self.view.layoutIfNeeded()
+        }
+        
+        
+      
     }
     
     func tapGestureHandler() {
@@ -163,7 +200,17 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
         return estimateframe
     }
     
-    
+    func scrollToLastItem() {
+        
+        let lastSection = colView.numberOfSections - 1
+        
+        let lastRow = colView.numberOfItems(inSection: lastSection)
+        
+        let indexPath = IndexPath(row: lastRow - 1, section: lastSection)
+        
+        self.colView.scrollToItem(at: indexPath, at: .bottom, animated: true)
+        
+    }
     
 }
 
