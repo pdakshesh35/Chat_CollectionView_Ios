@@ -144,6 +144,7 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
     }
     func keyboardWillChangeFrame(_ notification: Notification) {
         let endFrame = ((notification as NSNotification).userInfo![UIKeyboardFrameEndUserInfoKey] as! NSValue).cgRectValue
+        let isKeyBoardShowing = notification.name == NSNotification.Name.UIKeyboardWillChangeFrame
        
          tblBottom.constant = UIScreen.main.bounds.height - endFrame.origin.y
         if (colView.contentSize.height > endFrame.height) {
@@ -153,9 +154,12 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
                 
                 self.view.layoutIfNeeded()
             }) { (completed) in
-                let indexPath = NSIndexPath(item: self.names.count - 1, section: 0)
-                self.colView.scrollToItem(at: indexPath as IndexPath, at: .bottom, animated: true)
-          }
+                if(isKeyBoardShowing) {
+                  let indexPath = NSIndexPath(item: self.names.count - 1, section: 0)
+                  self.colView.scrollToItem(at: indexPath as IndexPath, at: .bottom, animated: false)
+         
+                }
+               }
        
         } else {
             self.view.layoutIfNeeded()
