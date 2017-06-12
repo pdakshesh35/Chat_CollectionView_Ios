@@ -149,17 +149,26 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
          tblBottom.constant = UIScreen.main.bounds.height - endFrame.origin.y
         if (colView.contentSize.height > endFrame.height) {
       
-           
-            UIView.animate(withDuration: 0, delay: 0, options: UIViewAnimationOptions.curveLinear, animations: {
+           //keyboard animationtime
+            let animationTime = (notification.userInfo?[UIKeyboardAnimationDurationUserInfoKey]! as AnyObject).doubleValue
+            
+            UIView.animate(withDuration: animationTime!, animations: { 
+                 self.view.layoutIfNeeded()
+                let indexPath = NSIndexPath(item: self.names.count - 1, section: 0)
+                self.colView.scrollToItem(at: indexPath as IndexPath, at: .bottom, animated: false)
                 
-                self.view.layoutIfNeeded()
-            }) { (completed) in
-                if(isKeyBoardShowing) {
-                  let indexPath = NSIndexPath(item: self.names.count - 1, section: 0)
-                  self.colView.scrollToItem(at: indexPath as IndexPath, at: .bottom, animated: false)
+            })
+           
+//             UIView.animate(withDuration: 0, delay: 0, options: UIViewAnimationOptions.curveLinear, animations: {
+                
+//                 self.view.layoutIfNeeded()
+//             }) { (completed) in
+//                 if(isKeyBoardShowing) {
+//                   let indexPath = NSIndexPath(item: self.names.count - 1, section: 0)
+//                   self.colView.scrollToItem(at: indexPath as IndexPath, at: .bottom, animated: false)
          
-                }
-               }
+//                 }
+//                }
        
         } else {
             self.view.layoutIfNeeded()
